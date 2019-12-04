@@ -1,0 +1,320 @@
+<!documentTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title> With Avocado </title>
+<title> Dont die </title>
+<style type="text/css">
+body {text-align:center;}
+canvas { border:5px dotted #ccc; }
+h1 { font-size:50px; text-align: center; margin: 0; padding-bottom: 25px;}
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial;
+            padding: 10px;
+            background-image: url("moon.jpg");
+        }
+
+        /* Header/Blog Title */
+        .header {
+            padding: 10px;
+            text-align: center;
+            background-image: url("moon.jpg");
+        }
+
+            .header h1 {
+                font-size: 50px;
+            }
+
+        /* Style the top navigation bar */
+        .topnav {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+            /* Style the topnav links */
+            .topnav a {
+                float: left;
+                display: block;
+                color: #f2f2f2;
+                text-align: center;
+                padding: 14px 16px;
+                text-decoration: none;
+            }
+
+                /* Change color on hover */
+                .topnav a:hover {
+                    background-color: #ddd;
+                    color: black;
+                }
+
+        /* Create two unequal columns that floats next to each other */
+        /* Left column */
+        .leftcolumn {
+            float: left;
+            width: 75%;
+        }
+
+        /* Right column */
+        .rightcolumn {
+            float: left;
+            width: 25%;
+            background-color: #f1f1f1;
+            padding-left: 20px;
+        }
+
+        .fa {
+            padding: 20px;
+            font-size: 30px;
+            width: 50px;
+            text-align: center;
+            text-decoration: none;
+            margin: 5px 2px;
+        }
+
+            .fa:hover {
+                opacity: 0.7;
+            }
+
+        .fa-facebook {
+            background: #3B5998;
+            color: white;
+        }
+
+        .fa-instagram {
+            background: #125688;
+            color: white;
+        }
+
+        .fa-youtube {
+            background: #bb0000;
+            color: white;
+        }
+
+        /* Fake image */
+        .fakeimg {
+            background-color: #aaa;
+            width: 100%;
+            padding: 20px;
+        }
+
+        /* Add a card effect for articles */
+        .card {
+            background: #ddd;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background: #ddd;
+            margin-top: 20px;
+        }
+
+        /* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+        @media screen and (max-width: 800px) {
+            .leftcolumn, .rightcolumn {
+                width: 100%;
+                padding: 0;
+            }
+        }
+
+        /* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+        @media screen and (max-width: 400px) {
+            .topnav a {
+                float: none;
+                width: 100%;
+            }
+        }
+
+        div.gallery {
+            margin: 5px;
+            border: 1px solid #ccc;
+            float: left;
+            width: 180px;
+        }
+
+            div.gallery:hover {
+                border: 1px solid #777;
+            }
+
+            div.gallery img {
+                width: 100%;
+                height: auto;
+            }
+
+        div.desc {
+            padding: 15px;
+            text-align: center;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        td, th {
+            padding-right: 20px;
+            padding-left: 20px;
+            text-align: center
+        }
+
+        th {
+            background-color: silver;
+        }
+        td {
+            background: #ddd;
+        }
+
+        label {
+            width: 200px;
+            margin: 5px;
+            display: inline-block;
+        }
+
+</style>
+<script type="text/javascript">
+function play_game()
+{
+var level = 160; // Game level, by decreasing will speed up
+var rect_w = 45; // Width
+var rect_h = 30; // Height
+var inc_score = 50; // Score
+var snake_color = "#006699"; // Snake Color
+var ctx; // Canvas attributes
+var tn = []; // temp directions storage
+var x_dir = [-1, 0, 1, 0]; // position adjusments
+var y_dir = [0, -1, 0, 1]; // position adjusments
+var queue = [];
+var frog = 1; // defalut food
+var map = [];
+var MR = Math.random;
+var X = 5 + (MR() * (rect_w - 10))|0; // Calculate positions
+var Y = 5 + (MR() * (rect_h - 10))|0; // Calculate positions
+var direction = MR() * 3 | 0;
+var interval = 0;
+var score = 0;
+var sum = 0, easy = 0;
+var i, dir;
+// getting play area 
+var c = document.getElementById('playArea');
+ctx = c.getContext('2d');
+// Map positions
+for (i = 0; i < rect_w; i++)
+{
+map[i] = [];
+}
+// random placement of snake food
+function rand_frog()
+{
+var x, y;
+do
+{
+x = MR() * rect_w|0;
+y = MR() * rect_h|0;
+}
+while (map[x][y]);
+map[x][y] = 1;
+ctx.fillStyle = snake_color;
+ctx.strokeRect(x * 10+1, y * 10+1, 8, 8);
+}
+// Default somewhere placement
+rand_frog();
+function set_game_speed()
+{
+if (easy)
+{
+X = (X+rect_w)%rect_w;
+Y = (Y+rect_h)%rect_h;
+}
+--inc_score;
+if (tn.length)
+{
+dir = tn.pop();
+if ((dir % 2) !== (direction % 2))
+{
+direction = dir;
+}
+}
+if ((easy || (0 <= X && 0 <= Y && X < rect_w && Y < rect_h)) && 2 !== map[X][Y])
+{
+if (1 === map[X][Y])
+{
+score+= Math.max(5, inc_score);
+inc_score = 50;
+rand_frog();
+frog++;
+}
+//ctx.fillStyle("#ffffff");
+ctx.fillRect(X * 10, Y * 10, 9, 9);
+map[X][Y] = 2;
+queue.unshift([X, Y]);
+X+= x_dir[direction];
+Y+= y_dir[direction];
+if (frog < queue.length)
+{
+dir = queue.pop()
+map[dir[0]][dir[1]] = 0;
+ctx.clearRect(dir[0] * 10, dir[1] * 10, 10, 10);
+}
+}
+else if (!tn.length)
+{
+var msg_score = document.getElementById("msg");
+msg_score.innerHTML = "Thank you for playing game </br> Không sến nhe không sến nhe. Mới đây mà 1 tháng ròi, dù chỉ vậy thôi nhưng mà có nhiều chuyện xảy ra vl. Hihi, nãy giờ chỉ làm được cái này cũng gọi là khá thú vị để tặng em thoi. Văn thơ dở tệ nhưng mà dù sao thì. Anh yêu em.</br> Your Score : <b>"+score+"</b><br /><br /><input type='button' value='Play Again' onclick='window.location.reload();' />";
+document.getElementById("playArea").style.display = 'none';
+window.clearInterval(interval);
+}
+}
+interval = window.setInterval(set_game_speed, level);
+document.onkeydown = function(e) {
+var code = e.keyCode - 37;
+if (0 <= code && code < 4 && code !== tn[0])
+{
+tn.unshift(code);
+}
+else if (-5 == code)
+{
+if (interval)
+{
+window.clearInterval(interval);
+interval = 0;
+}
+else
+{
+interval = window.setInterval(set_game_speed, 60);
+}
+}
+else
+{
+dir = sum + code;
+if (dir == 44||dir==94||dir==126||dir==171) {
+sum+= code
+} else if (dir === 218) easy = 1;
+}
+}
+}
+</script>
+</head>
+
+<body onload="play_game()">
+<h1>Play Snake Game with Avocado and Bo dep trai</h1>
+<h2>Dont die, actually just die if you want to see the special thing <h2>
+<div id="msg"></div>
+<canvas id="playArea" width="450" height="300">Sorry your browser does not support HTML5</canvas>
+<div class="footer">
+        <p>&copy;2019 Vinh Phuc Le</br></p>
+        <p>Email: phuclevinh2000@gmail.com</p>
+    </div>
+</body>
+</html>
